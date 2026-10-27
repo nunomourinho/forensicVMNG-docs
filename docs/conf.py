@@ -9,6 +9,8 @@ project = 'ForensicVM NextGen'
 author = 'Nuno Mourinho e colaboradores'
 copyright = '2026, Nuno Mourinho e colaboradores'
 language = 'pt_PT'
+# versão da documentação (o EPUB3 exige uma)
+version = release = '2026.10'
 
 extensions = ['myst_parser']
 myst_enable_extensions = ['colon_fence', 'deflist', 'attrs_inline', 'attrs_block']
@@ -26,6 +28,14 @@ html_theme_options = {
     'style_external_links': True,
 }
 html_show_sourcelink = False
+
+# PDF (Read the Docs): XeLaTeX por causa dos caracteres Unicode (→, ✗) e A4
+latex_engine = 'xelatex'
+latex_documents = [('index', 'forensicvm-nextgen.tex', 'ForensicVM NextGen — Documentação', author, 'manual')]
+latex_elements = {'papersize': 'a4paper', 'pointsize': '11pt'}
+epub_show_urls = 'footnote'
+# os exemplos de autoinstall (sem extensão) não entram no EPUB
+suppress_warnings = ['epub.unknown_project_files']
 
 VIDEOS = Path(__file__).parent / '_data' / 'videos.json'
 
@@ -46,6 +56,14 @@ class VideoDirective(Directive):
         self.state.document.settings.env.note_dependency(str(VIDEOS))
         info = json.loads(VIDEOS.read_text(encoding='utf-8')).get(vid, {})
         yt = info.get('youtube')
+        if self.state.document.settings.env.app.builder.format != 'html':
+            # PDF/EPUB: sem leitor — uma ligação para o vídeo, ou nada enquanto não existir
+            if not yt:
+                return []
+            url = f'https://youtu.be/{yt}'
+            par = nodes.paragraph(text='Vídeo de demonstração: ')
+            par += nodes.reference(url, url, refuri=url)
+            return [par]
         if not yt:
             nota = nodes.note()
             nota += nodes.paragraph(text='Vídeo em breve: esta página vai incluir o vídeo de demonstração correspondente.')

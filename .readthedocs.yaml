@@ -13,3 +13,8 @@ sphinx:
 python:
   install:
     - requirements: docs/requirements.txt
+
+# Downloads além do HTML (aparecem no menu de versões e na página «Downloads» do projeto)
+formats:
+  - pdf
+  - epub
