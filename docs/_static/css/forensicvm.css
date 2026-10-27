@@ -4,3 +4,9 @@
 /* Capturas de ecrã: moldura discreta, legenda em itálico */
 .rst-content figure img, .rst-content .figure img { border: 1px solid #d0d4d9; border-radius: 4px; }
 .rst-content figure figcaption, .rst-content .figure .caption { font-style: italic; color: #555; }
+/* Tabelas: o tema força «white-space: nowrap» nas células, e as tabelas com texto longo
+   ficam cortadas (só com scroll horizontal). Deixar o texto partir dentro das células. */
+.wy-table-responsive table td, .wy-table-responsive table th { white-space: normal; vertical-align: top; }
+.wy-table-responsive table { width: 100%; }
+/* primeira coluna (o termo) sem partir a meio, mas sem ocupar a tabela toda */
+.wy-table-responsive table td:first-child { min-width: 9em; }

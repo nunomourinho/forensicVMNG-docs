@@ -206,7 +206,7 @@ def playlist(yt, estado):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--videos', type=Path, default=Path('/forensicVM/mnt/iso/demo-pj'))
-    ap.add_argument('--docs-url', default='https://forensicvmng-docs.readthedocs.io/pt/latest')
+    ap.add_argument('--docs-url', default='https://forensicvmng-user-manual.readthedocs.io/pt/latest')
     ap.add_argument('--privacidade', choices=['public', 'unlisted', 'private'], default='public')
     ap.add_argument('--apenas', nargs='+', metavar='ID', help='só estes vídeos')
     ap.add_argument('--simular', action='store_true', help='mostra os metadados sem usar a API')
