@@ -1,0 +1,6 @@
+/* Leitor de vídeo responsivo (16:9) */
+.fvm-video { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 0 0 24px; }
+.fvm-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 4px; }
+/* Capturas de ecrã: moldura discreta, legenda em itálico */
+.rst-content figure img, .rst-content .figure img { border: 1px solid #d0d4d9; border-radius: 4px; }
+.rst-content figure figcaption, .rst-content .figure .caption { font-style: italic; color: #555; }

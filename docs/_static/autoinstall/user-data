@@ -1,0 +1,65 @@
+#cloud-config
+# Autoinstall do Ubuntu Server 24.04 para o ForensicVM — instalação DESATENDIDA.
+# Reproduz as escolhas do vídeo 26 (idioma/teclado, rede DHCP, disco inteiro com
+# LVM, utilizador administrador, servidor OpenSSH). É um EXEMPLO: adapte o nome do
+# servidor, o utilizador e, sobretudo, a password antes de usar.
+#
+# Como usar (resumo):
+#   - Coloque este ficheiro como «user-data» e um «meta-data» vazio numa fonte
+#     que o instalador leia (cloud-init: p. ex. um ISO/pen com etiqueta CIDATA,
+#     ou um servidor HTTP indicado no arranque com  autoinstall ds=nocloud-net).
+#   - O instalador do Ubuntu Server 24.04 segue estas escolhas sem perguntar.
+#
+# Gerar a hash da password (NÃO guardar a password em claro):
+#   openssl passwd -6 'a-sua-password-forte'
+# e colar o resultado em identity.password.
+
+autoinstall:
+  version: 1
+
+  # Idioma, teclado e fuso horário: Portugal (ajuste ao seu ambiente).
+  locale: pt_PT.UTF-8
+  keyboard:
+    layout: pt
+  timezone: Europe/Lisbon
+
+  # Rede: DHCP em todas as interfaces. Em produção, considere fixar o IP aqui.
+  network:
+    version: 2
+    ethernets:
+      any:
+        match:
+          name: "e*"
+        dhcp4: true
+
+  # Mantém a versão do ISO (instalação repetível); não atualiza o instalador.
+  refresh-installer:
+    update: false
+
+  # Disco inteiro, esquema guiado por LVM (como no vídeo).
+  storage:
+    layout:
+      name: lvm
+
+  # Utilizador administrador. Troque o nome e a hash da password.
+  identity:
+    hostname: forensicvm
+    realname: ForensicVM Admin
+    username: fvmadmin
+    # hash de exemplo (password: "trocar-esta-password") — GERE A SUA com openssl passwd -6
+    password: "$6$brbU51AABaHWGuw3$46XypLAbDUWeRY6r52s8rCbff8JXrfEPp8QuBvhKj3AYm5MzKSnHosMRTBPADtvw5..hls1HOqJaAnWBYhNKL."
+
+  # Acesso remoto seguro.
+  ssh:
+    install-server: true
+    allow-pw: true
+
+  # Sem pacotes extra; o ForensicVM instala o que precisa pelo install.sh.
+  packages: []
+
+  # Opcional: ações após a instalação, antes do primeiro arranque.
+  # late-commands:
+  #   - curtin in-target --target=/target -- bash -c "echo 'pronto para o install.sh'"
+
+  # Não fazer perguntas interativas.
+  interactive-sections: []

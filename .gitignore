@@ -1,0 +1,7 @@
+docs/_build/
+.venv/
+__pycache__/
+*.pyc
+# credenciais do upload para o YouTube — nunca no repositório
+client_secret*.json
+youtube-token*.json
