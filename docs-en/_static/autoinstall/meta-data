@@ -1,0 +1,3 @@
+# cloud-init meta-data — empty on purpose (the server name comes from user-data).
+# It must sit next to user-data on the NoCloud source (label CIDATA).
+instance-id: forensicvm-autoinstall

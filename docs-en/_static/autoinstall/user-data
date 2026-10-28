@@ -1,0 +1,65 @@
+#cloud-config
+# Ubuntu Server 24.04 autoinstall for ForensicVM — UNATTENDED installation.
+# Reproduces the choices in video 26 (language/keyboard, DHCP network, whole disk
+# with LVM, administrator user, OpenSSH server). It is an EXAMPLE: adapt the server
+# name, the user and, above all, the password before using it.
+#
+# How to use it (summary):
+#   - Place this file as "user-data", with an empty "meta-data", on a source the
+#     installer reads (cloud-init: e.g. an ISO/USB stick labelled CIDATA, or an
+#     HTTP server given at boot with  autoinstall ds=nocloud-net).
+#   - The Ubuntu Server 24.04 installer follows these choices without asking.
+#
+# Generate the password hash (do NOT store the password in clear text):
+#   openssl passwd -6 'your-strong-password'
+# and paste the result into identity.password.
+
+autoinstall:
+  version: 1
+
+  # Language, keyboard and time zone: United Kingdom (adjust to your environment).
+  locale: en_GB.UTF-8
+  keyboard:
+    layout: gb
+  timezone: Europe/London
+
+  # Network: DHCP on every interface. In production, consider fixing the IP here.
+  network:
+    version: 2
+    ethernets:
+      any:
+        match:
+          name: "e*"
+        dhcp4: true
+
+  # Keep the ISO's version (repeatable installation); do not update the installer.
+  refresh-installer:
+    update: false
+
+  # Whole disk, guided LVM layout (as in the video).
+  storage:
+    layout:
+      name: lvm
+
+  # Administrator user. Change the name and the password hash.
+  identity:
+    hostname: forensicvm
+    realname: ForensicVM Admin
+    username: fvmadmin
+    # example hash (password: "change-this-password") — GENERATE YOUR OWN with openssl passwd -6
+    password: "$6$E6qm51bez.qH42xq$pUF0mUX5ZIB1D12RSiemJJbJ34iZjAJfNj/xbfqeH4VFjzj/ZeL63jFN4s1fPeKdtO3VU7mCs83eEcb1Ot4LT1"
+
+  # Secure remote access.
+  ssh:
+    install-server: true
+    allow-pw: true
+
+  # No extra packages; ForensicVM installs what it needs through install.sh.
+  packages: []
+
+  # Optional: actions after installation, before the first boot.
+  # late-commands:
+  #   - curtin in-target --target=/target -- bash -c "echo 'ready for install.sh'"
+
+  # Do not ask interactive questions.
+  interactive-sections: []

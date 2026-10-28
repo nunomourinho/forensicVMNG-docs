@@ -1,18 +1,29 @@
 # ForensicVM NextGen — documentação pública
 
 Documentação pública do **ForensicVM NextGen**, plataforma web de virtualização forense, publicada no
-Read the Docs. Escrita em português de Portugal, a partir da série de vídeos de demonstração.
+Read the Docs em duas línguas, a partir das duas séries de vídeos de demonstração:
 
-- Fonte: Markdown (MyST) em `docs/`, compilado com Sphinx e o tema `sphinx_rtd_theme`.
-- Imagens: fotogramas dos vídeos, em `docs/_static/img/<id-do-vídeo>/`.
-- Vídeos: incorporados do YouTube. Os IDs estão em `docs/_data/videos.json`.
+| Língua | Fonte | Configuração RTD | Endereço |
+|---|---|---|---|
+| Português (pt-PT) | `docs/` | `.readthedocs.yaml` | <https://forensicvmng-user-manual.readthedocs.io/pt/latest/> |
+| English (en-GB) | `docs-en/` | `.readthedocs-en.yaml` | <https://forensicvmng-user-manual.readthedocs.io/en/latest/> |
+
+- Fonte: Markdown (MyST), compilado com Sphinx e o tema `sphinx_rtd_theme`.
+- Imagens: fotogramas dos vídeos de cada língua, em `docs*/_static/img/<id-do-vídeo>/` (os nomes das
+  pastas são os ids da série, iguais nas duas línguas).
+- Vídeos: incorporados do YouTube. Os IDs estão em `docs/_data/videos.json` (pt na raiz, en em `"en"`).
+- A diretiva `{video}` está em `ext/forensicvm_sphinx.py`, partilhada pelas duas árvores. O CSS está em
+  `docs/_static/css/` e o `docs-en/conf.py` reutiliza-o.
+- As páginas inglesas têm nomes ingleses (`virtual-machines/snapshots`, `analysis/process-manager`…). A
+  árvore é a mesma: cada página PT tem a sua equivalente, com o mesmo vídeo e as mesmas figuras.
 
 ## Compilar localmente
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r docs/requirements.txt
-.venv/bin/sphinx-build -W -b html docs docs/_build/html
+.venv/bin/sphinx-build -W -b html docs docs/_build/html          # pt
+.venv/bin/sphinx-build -W -b html docs-en docs-en/_build/html    # en
 xdg-open docs/_build/html/index.html
 ```
 
@@ -61,13 +72,23 @@ MP4 e dos JSON de capítulos da série). A escolha das imagens que entram na doc
 2. **Add project** → importar `nunomourinho/forensicVMNG-docs`.
 3. Em *Settings*, escolher o idioma **Portuguese**. O resto vem de `.readthedocs.yaml`.
 
-Cada *push* para `main` reconstrói a documentação.
+### O projeto inglês (tradução)
+
+1. **Add project** → importar outra vez `nunomourinho/forensicVMNG-docs`, com o nome
+   `forensicvmng-user-manual-en` e o idioma **English**.
+2. Nesse projeto, *Settings* → *Build configuration file*: `.readthedocs-en.yaml`.
+3. No projeto português, *Settings* → *Translations* → adicionar `forensicvmng-user-manual-en`. O inglês
+   passa a servir-se em `/en/latest/` e o seletor de língua aparece no menu.
+
+Cada *push* para `main` reconstrói as duas documentações.
 
 ## Carregar os vídeos no YouTube
 
-`scripts/youtube_upload.py` carrega os vídeos da série com a YouTube Data API v3: título, descrição com
-capítulos e ligação para a página da documentação, legendas pt-PT e playlist. Grava o ID de cada vídeo em
-`docs/_data/videos.json`. Depois de um *commit* + *push* desse ficheiro, os vídeos aparecem nas páginas.
+`scripts/youtube_upload.py` carrega os vídeos da série com a YouTube Data API v3: a versão com as
+legendas gravadas na imagem, título, descrição com capítulos e ligação para a página da documentação, e
+uma playlist por língua (`--lang pt|en`). Os vídeos ficam **não listados** por omissão. Grava o ID de
+cada vídeo em `docs/_data/videos.json`. Depois de um *commit* + *push* desse ficheiro, os vídeos aparecem
+nas páginas. No primeiro uso, fixa o canal (`_canal`) e recusa depois carregar para outro.
 
 ### 1. Preparar o projeto Google Cloud (uma vez)
 
@@ -96,28 +117,29 @@ capítulos e ligação para a página da documentação, legendas pt-PT e playli
 
 ### 3. Primeiro login (uma vez)
 
-O login OAuth abre um pequeno servidor local na porta 8765. Se o script correr num servidor remoto, abra
-primeiro um túnel a partir do seu computador:
+O login não precisa de browser no servidor nem de túnel:
 
 ```bash
-ssh -L 8765:localhost:8765 <utilizador>@<servidor>
+.venv/bin/python scripts/youtube_upload.py --auth-url
 ```
 
-Depois, no servidor:
+Abra o endereço impresso no browser do seu computador, escolha o **canal** para onde vão os vídeos e
+autorize. O browser acaba numa página `http://localhost:8765/?state=…&code=…` que não abre: copie esse
+endereço completo e passe-o ao script:
 
 ```bash
-.venv/bin/python scripts/youtube_upload.py --apenas 32-resumo-sistema
+.venv/bin/python scripts/youtube_upload.py --auth-code 'http://localhost:8765/?state=…&code=…'
 ```
 
-O script imprime um endereço. Abra-o no browser do seu computador, entre com a conta do canal e autorize.
-O token fica em `~/.config/forensicvm/youtube-token.json` (0600). O primeiro vídeo é o 32 (visão geral):
-confirme no YouTube Studio o título, os capítulos e as legendas antes de continuar.
+O token fica em `~/.config/forensicvm/youtube-token.json` (0600) e o script mostra o canal autorizado.
+Comece por um vídeo (`--apenas 32-resumo-sistema`) e confirme-o no YouTube Studio antes de continuar.
 
 ### 4. Carregar o resto
 
 ```bash
 .venv/bin/python scripts/youtube_upload.py --simular   # ver os metadados sem usar a API
-.venv/bin/python scripts/youtube_upload.py             # carregar os que faltam
+.venv/bin/python scripts/youtube_upload.py             # carregar os que faltam (pt)
+.venv/bin/python scripts/youtube_upload.py --lang en   # série inglesa
 git add docs/_data/videos.json && git commit -m "docs: vídeos do YouTube" && git push
 ```
 
@@ -127,9 +149,11 @@ git add docs/_data/videos.json && git commit -m "docs: vídeos do YouTube" && gi
   pela API ficam bloqueados como **privados**, seja qual for a opção pedida. Mude-os para públicos no
   YouTube Studio (é possível selecionar vários de uma vez), ou peça a auditoria no formulário *YouTube API
   Services — Audit and Quota Extension*. Vídeos privados não se veem incorporados nas páginas.
-- **Quota diária:** 10 000 unidades. Um upload gasta cerca de 1 600 e uma legenda 400, o que dá cerca de
-  cinco vídeos por dia. Ao esgotar a quota, o script pára, guarda o progresso e retoma onde ficou na
-  execução seguinte.
+- **Quota diária:** 10 000 unidades. Um upload gasta cerca de 1 600 e uma legenda 400.
+- **Limite de uploads do canal:** um canal não verificado por telefone aceita poucos vídeos por dia
+  (`uploadLimitExceeded`; na prática foram 10). A verificação em <https://www.youtube.com/verify> levanta-o.
+- Ao esgotar a quota ou o limite, o script pára, guarda o progresso e retoma onde ficou na execução
+  seguinte.
 - **Credenciais:** nunca as ponha no repositório. O `.gitignore` exclui `client_secret*.json` e
   `youtube-token*.json`.
 

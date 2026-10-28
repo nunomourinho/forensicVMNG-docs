@@ -2,6 +2,9 @@
 
 **Virtualização forense, do laboratório ao tribunal.**
 
+*This documentation is also available in
+[English](https://forensicvmng-user-manual.readthedocs.io/en/latest/).*
+
 O ForensicVM NextGen é uma plataforma web que converte imagens forenses de disco (E01/EWF, AFF, RAW,
 VMDK, QCOW2) em máquinas virtuais arrancáveis, controladas a partir do navegador. Com ele, o perito pode
 ver o sistema apreendido *a funcionar*: o ambiente de trabalho do utilizador, as aplicações, a memória, o
