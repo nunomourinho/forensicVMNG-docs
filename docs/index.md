@@ -38,16 +38,16 @@ O ForensicVM faz essa ponte:
 **Estado do projeto.** O ForensicVM NextGen está em desenvolvimento ativo e **ainda não é recomendado
 para uso em produção**. Todos os testes, incluindo as demonstrações desta documentação, foram feitos com
 imagens forenses públicas do [CFReDS](https://cfreds.nist.gov/) (NIST), nunca em casos reais. Veja
-{doc}`projeto/estado-e-colaboracao`.
+{doc}`project/status-and-collaboration`.
 ```
 
 ## Por onde começar
 
-- **Quer uma visão geral?** Comece por {doc}`introducao/visao-geral`: o sistema inteiro em sete minutos.
-- **Vai usar a plataforma?** Siga {doc}`comecar/primeiros-passos` e depois a ordem das secções no menu.
+- **Quer uma visão geral?** Comece por {doc}`introduction/overview`: o sistema inteiro em sete minutos.
+- **Vai usar a plataforma?** Siga {doc}`getting-started/first-steps` e depois a ordem das secções no menu.
   Corresponde ao percurso de um exame: do caso à conversão, à máquina virtual, à análise e ao relatório.
-- **Vai instalar um servidor?** Vá a {doc}`instalacao/index`.
-- **Administra um servidor já instalado?** Veja {doc}`administracao/index`.
+- **Vai instalar um servidor?** Vá a {doc}`installation/index`.
+- **Administra um servidor já instalado?** Veja {doc}`administration/index`.
 
 Cada página corresponde a um vídeo de demonstração, gravado com operações reais sobre imagens públicas.
 O vídeo aparece no topo da página. As imagens e o texto foram adaptados desses vídeos.
@@ -56,42 +56,42 @@ O vídeo aparece no topo da página. As imagens e o texto foram adaptados desses
 :caption: Introdução
 :maxdepth: 2
 
-introducao/o-que-e
-introducao/conceitos
-introducao/visao-geral
+introduction/what-is
+introduction/concepts
+introduction/overview
 ```
 
 ```{toctree}
 :caption: Começar
 :maxdepth: 2
 
-comecar/primeiros-passos
-comecar/casos-e-equipa
+getting-started/first-steps
+getting-started/cases-and-team
 ```
 
 ```{toctree}
 :caption: Utilização
 :maxdepth: 2
 
-conversao/index
-maquinas-virtuais/index
-analise/index
+conversion/index
+virtual-machines/index
+analysis/index
 malware/index
-gestao/index
+management/index
 ```
 
 ```{toctree}
 :caption: Instalação e administração
 :maxdepth: 2
 
-instalacao/index
-administracao/index
+installation/index
+administration/index
 ```
 
 ```{toctree}
 :caption: Projeto
 :maxdepth: 1
 
-projeto/estado-e-colaboracao
-glossario
+project/status-and-collaboration
+glossary
 ```

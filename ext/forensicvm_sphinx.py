@@ -63,6 +63,35 @@ class VideoDirective(Directive):
         return [nodes.raw('', html, format='html')]
 
 
+REDIRECTS = VIDEOS.parent / 'redirects.json'
+REDIRECT_HTML = (
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>{alvo}</title>'
+    '<link rel="canonical" href="{alvo}"><meta http-equiv="refresh" content="0; url={alvo}">'
+    '</head><body><a href="{alvo}">{alvo}</a></body></html>\n'
+)
+
+
+def redirecionar(app, exc):
+    """Páginas antigas (nomes em português) → nomes atuais, só na árvore pt.
+
+    As páginas pt passaram a ter os mesmos nomes que as en, para o seletor de língua
+    do Read the Docs abrir a página equivalente. Os endereços antigos (e as ligações
+    nas descrições dos vídeos do YouTube) continuam a funcionar com estas páginas.
+    """
+    if exc or app.builder.format != 'html' or lingua(app.builder.env) != 'pt' or not REDIRECTS.exists():
+        return
+    import posixpath
+    suffix = app.builder.out_suffix
+    for antigo, novo in json.loads(REDIRECTS.read_text(encoding='utf-8')).items():
+        destino = Path(app.outdir) / f'{antigo}{suffix}'
+        if destino.exists():
+            continue
+        alvo = posixpath.relpath(f'{novo}{suffix}', posixpath.dirname(antigo) or '.')
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        destino.write_text(REDIRECT_HTML.format(alvo=alvo), encoding='utf-8')
+
+
 def setup(app):
     app.add_directive('video', VideoDirective)
+    app.connect('build-finished', redirecionar)
     return {'parallel_read_safe': True}

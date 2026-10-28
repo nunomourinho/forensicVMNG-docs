@@ -14,8 +14,11 @@ Read the Docs em duas línguas, a partir das duas séries de vídeos de demonstr
 - Vídeos: incorporados do YouTube. Os IDs estão em `docs/_data/videos.json` (pt na raiz, en em `"en"`).
 - A diretiva `{video}` está em `ext/forensicvm_sphinx.py`, partilhada pelas duas árvores. O CSS está em
   `docs/_static/css/` e o `docs-en/conf.py` reutiliza-o.
-- As páginas inglesas têm nomes ingleses (`virtual-machines/snapshots`, `analysis/process-manager`…). A
-  árvore é a mesma: cada página PT tem a sua equivalente, com o mesmo vídeo e as mesmas figuras.
+- **As duas línguas usam os mesmos nomes de páginas** (em inglês: `virtual-machines/snapshots`,
+  `analysis/process-manager`…). Sem isso, o seletor de língua do Read the Docs não abre a página
+  equivalente. Ao criar uma página nova, use o mesmo caminho em `docs/` e em `docs-en/`.
+- Os nomes portugueses antigos (`maquinas-virtuais/agente-qemu`…) continuam a funcionar: o build pt gera
+  páginas de reencaminhamento a partir de `docs/_data/redirects.json`.
 
 ## Compilar localmente
 
