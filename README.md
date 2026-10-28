@@ -6,7 +6,7 @@ Read the Docs em duas línguas, a partir das duas séries de vídeos de demonstr
 | Língua | Fonte | Configuração RTD | Endereço |
 |---|---|---|---|
 | Português (pt-PT) | `docs/` | `.readthedocs.yaml` | <https://forensicvmng-user-manual.readthedocs.io/pt/latest/> |
-| English (en-GB) | `docs-en/` | `.readthedocs-en.yaml` | <https://forensicvmng-user-manual.readthedocs.io/en/latest/> |
+| English (en-GB) | `docs-en/` | `docs-en/.readthedocs.yaml` | <https://forensicvmng-user-manual.readthedocs.io/en/latest/> |
 
 - Fonte: Markdown (MyST), compilado com Sphinx e o tema `sphinx_rtd_theme`.
 - Imagens: fotogramas dos vídeos de cada língua, em `docs*/_static/img/<id-do-vídeo>/` (os nomes das
@@ -76,7 +76,7 @@ MP4 e dos JSON de capítulos da série). A escolha das imagens que entram na doc
 
 1. **Add project** → importar outra vez `nunomourinho/forensicVMNG-docs`, com o nome
    `forensicvmng-user-manual-en` e o idioma **English**.
-2. Nesse projeto, *Settings* → *Build configuration file*: `.readthedocs-en.yaml`.
+2. Nesse projeto, *Settings* → *Build configuration file*: `docs-en/.readthedocs.yaml`.
 3. No projeto português, *Settings* → *Translations* → adicionar `forensicvmng-user-manual-en`. O inglês
    passa a servir-se em `/en/latest/` e o seletor de língua aparece no menu.
 

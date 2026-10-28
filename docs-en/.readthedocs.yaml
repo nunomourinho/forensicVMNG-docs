@@ -1,4 +1,4 @@
-# Read the Docs configuration — English project (forensicvmng-user-manual-en) — https://docs.readthedocs.io/en/stable/config-file/v2.html
+# Read the Docs configuration — English project (forensicvmng-user-manual-en). RTD only accepts the name .readthedocs.yaml, so this one lives in docs-en/; paths below are relative to the repository root. https://docs.readthedocs.io/en/stable/config-file/v2.html
 version: 2
 
 build:
