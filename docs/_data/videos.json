@@ -1,1 +1,430 @@
-{}
+{
+  "_canal": {
+    "id": "UCtEIc5ToJ7Wy0TEubww3YKw",
+    "titulo": "ForensicVM"
+  },
+  "_playlist": "PLJzfZT_OrRSs",
+  "32-resumo-sistema": {
+    "titulo": "ForensicVM NextGen em 7 minutos",
+    "youtube": "1OngneYnNvM",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "01-primeiros-passos": {
+    "titulo": "ForensicVM — Primeiros passos",
+    "youtube": "YjYPOqK4Lso",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "02-casos-e-equipa": {
+    "titulo": "ForensicVM — Casos e equipa",
+    "youtube": "EcLG-J-QGFY",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "03-bart-cfreds-conversao": {
+    "titulo": "ForensicVM — Do CFReDS à máquina virtual",
+    "youtube": "Cy9wni2CqgE",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "04-injecao-de-drivers": {
+    "titulo": "ForensicVM — Injeção de drivers",
+    "youtube": "XGXXjSc48L8",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "13-hacking-case": {
+    "titulo": "ForensicVM — Hacking Case (NIST)",
+    "youtube": "iMJq2TPU1K8",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "16-outras-origens": {
+    "titulo": "ForensicVM — Outras origens",
+    "youtube": "cjjip11GPRE",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "05-arranque-e-consola": {
+    "titulo": "ForensicVM — Arranque e consola",
+    "youtube": "fOWRe43lMjE",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "06-acesso-sem-alterar-password": {
+    "titulo": "ForensicVM — Acesso à conta sem alterar a credencial",
+    "youtube": "ulYksBTV6kc",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "17-consola": {
+    "titulo": "ForensicVM — A consola, o posto de comando",
+    "youtube": "zgTG9rI6wWY",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "en": {
+    "_playlist": "PLBKuE6oSiSlQ",
+    "32-resumo-sistema": {
+      "titulo": "ForensicVM NextGen in 7 minutes",
+      "youtube": "Tc9-ohKhpJo",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "01-primeiros-passos": {
+      "titulo": "ForensicVM — First steps",
+      "youtube": "UWmjkTPnlUk",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "02-casos-e-equipa": {
+      "titulo": "ForensicVM — Cases and team",
+      "youtube": "WC8y2Q_oLMw",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "03-bart-cfreds-conversao": {
+      "titulo": "ForensicVM — From CFReDS to a virtual machine",
+      "youtube": "zATSsIope1s",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "04-injecao-de-drivers": {
+      "titulo": "ForensicVM — Driver injection",
+      "youtube": "iXppscOoCLY",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "13-hacking-case": {
+      "titulo": "ForensicVM — Hacking Case (NIST)",
+      "youtube": "HQmqtv-lBM8",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "16-outras-origens": {
+      "titulo": "ForensicVM — Other sources",
+      "youtube": "UimOZtNCD_E",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "05-arranque-e-consola": {
+      "titulo": "ForensicVM — Boot and console",
+      "youtube": "hc6UM-pJltY",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "06-acesso-sem-alterar-password": {
+      "titulo": "ForensicVM — Account access without changing the credential",
+      "youtube": "vHC1agnu62s",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "17-consola": {
+      "titulo": "ForensicVM — The console, the command post",
+      "youtube": "_r4-WwoJA6k",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "09-snapshots": {
+      "titulo": "ForensicVM — Snapshots",
+      "youtube": "UoY5HEO0QS4",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "12-hardware": {
+      "titulo": "ForensicVM — Hardware and firmware",
+      "youtube": "G1Su1aGbuWc",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "29-instalar-agente": {
+      "titulo": "ForensicVM — Installing the QEMU agent on evidence in snapshot mode",
+      "youtube": "aEyQ-NZ4xZ4",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "30-desencriptar-disco": {
+      "titulo": "ForensicVM — Decrypting a disk",
+      "youtube": "aUjY0bgoh5Y",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "07-plugins": {
+      "titulo": "ForensicVM — Plug-ins",
+      "youtube": "8DGW4w2q24o",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "08-gravacao-da-sessao": {
+      "titulo": "ForensicVM — Session recording",
+      "youtube": "TUEvnvYPLBw",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "10-memoria": {
+      "titulo": "ForensicVM — Memory",
+      "youtube": "fJs5yPgPmpA",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "11-rede": {
+      "titulo": "ForensicVM — Network",
+      "youtube": "RAsFv0pbFHs",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "18-introspecao": {
+      "titulo": "ForensicVM — Introspection: processes and memory",
+      "youtube": "b2VkZ260x2U",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "19-evidencias": {
+      "titulo": "ForensicVM — The evidence disk",
+      "youtube": "ORDT5IGvCVI",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "31-gestor-processos": {
+      "titulo": "ForensicVM — Process manager",
+      "youtube": "BJ_WnUyHwTA",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "20-cape-introducao": {
+      "titulo": "ForensicVM — Malware analysis — CAPE",
+      "youtube": "Ujm7rLCxuJg",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "22-cape-utilizacao": {
+      "titulo": "ForensicVM — Using CAPE — from the evidence to the report",
+      "youtube": "pAiYyNl0wbY",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "14-auditoria": {
+      "titulo": "ForensicVM — Action audit log",
+      "youtube": "2aWfJC8kMAc",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "15-administracao": {
+      "titulo": "ForensicVM — Administration",
+      "youtube": "CSv9paikisM",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "24-relatorio-do-caso": {
+      "titulo": "ForensicVM — The forensic case report",
+      "youtube": "sk7iGlT7ACA",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "23-estado-e-colaboracao": {
+      "titulo": "ForensicVM — Project status and collaboration",
+      "youtube": "ve2_JaFeWaI",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "25-pre-requisitos": {
+      "titulo": "ForensicVM — Prerequisites and preparation",
+      "youtube": "FKRCvmzA5WE",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "26-ubuntu-server": {
+      "titulo": "ForensicVM — Installing Ubuntu Server 24.04",
+      "youtube": "WbT5LyxqDC0",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "27-forensicvm": {
+      "titulo": "ForensicVM — Installing ForensicVM",
+      "youtube": "VvtruAPRvrw",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "28-https-intranet": {
+      "titulo": "ForensicVM — HTTPS on an intranet — local CA and security key",
+      "youtube": "HsoRKMuCsRk",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "21-cape-instalacao": {
+      "titulo": "ForensicVM — Installing CAPE — module and analysis machine",
+      "youtube": "ea-ViapaeMs",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "33-gestao-operacao": {
+      "titulo": "ForensicVM — Managing the server",
+      "youtube": "yBwTf5ViVbo",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "34-copias-troubleshooting": {
+      "titulo": "ForensicVM — Backups and troubleshooting",
+      "youtube": "ShXASyvnc9U",
+      "privacidade": "unlisted",
+      "legendas": "gravadas"
+    },
+    "00-principal": {
+      "titulo": "ForensicVM — Full demonstration",
+      "youtube": "qbi37GSejaw",
+      "privacidade": "unlisted",
+      "legendas": true
+    }
+  },
+  "09-snapshots": {
+    "titulo": "ForensicVM — Snapshots",
+    "youtube": "OW8pVibiCOQ",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "12-hardware": {
+    "titulo": "ForensicVM — Hardware e firmware",
+    "youtube": "yFu2P9nRbZI",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "29-instalar-agente": {
+    "titulo": "ForensicVM — Instalar o agente QEMU num indício em modo snapshot",
+    "youtube": "NZCol0ZHRxg",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "30-desencriptar-disco": {
+    "titulo": "ForensicVM — Desencriptar um disco",
+    "youtube": "96NNnTmIe8I",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "07-plugins": {
+    "titulo": "ForensicVM — Plug-ins",
+    "youtube": "7z2ByZg3cWI",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "08-gravacao-da-sessao": {
+    "titulo": "ForensicVM — Gravação da sessão",
+    "youtube": "izT0GotmFHU",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "10-memoria": {
+    "titulo": "ForensicVM — Memória",
+    "youtube": "GqI6aOk-MyU",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "11-rede": {
+    "titulo": "ForensicVM — Rede",
+    "youtube": "9t6WUDi7u-0",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "18-introspecao": {
+    "titulo": "ForensicVM — Introspection: processos e memória",
+    "youtube": "VSeFLlzjKLs",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "19-evidencias": {
+    "titulo": "ForensicVM — O disco de evidências",
+    "youtube": "C1k_9FedjqY",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "31-gestor-processos": {
+    "titulo": "ForensicVM — Gestor de processos",
+    "youtube": "80zZ2h-A41I",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "20-cape-introducao": {
+    "titulo": "ForensicVM — Análise de malware — o CAPE",
+    "youtube": "xgOg70nt8hU",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "22-cape-utilizacao": {
+    "titulo": "ForensicVM — Usar o CAPE — do indício ao relatório",
+    "youtube": "ttVkmheiat0",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "14-auditoria": {
+    "titulo": "ForensicVM — Registo de auditoria",
+    "youtube": "LgsGyvGG_gE",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "15-administracao": {
+    "titulo": "ForensicVM — Administração",
+    "youtube": "8uJ1c1-6GFU",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "24-relatorio-do-caso": {
+    "titulo": "ForensicVM — Relatório forense do caso",
+    "youtube": "Z2_pjz0L97g",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "23-estado-e-colaboracao": {
+    "titulo": "ForensicVM — Estado do projeto e colaboração",
+    "youtube": "96xu1icxEes",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "25-pre-requisitos": {
+    "titulo": "ForensicVM — Pré-requisitos e preparação",
+    "youtube": "Rs1HlGMwxYA",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "26-ubuntu-server": {
+    "titulo": "ForensicVM — Instalar o Ubuntu Server 24.04",
+    "youtube": "7zO2tEKrA18",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "27-forensicvm": {
+    "titulo": "ForensicVM — Instalar o ForensicVM",
+    "youtube": "pEibbNSD9TM",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "28-https-intranet": {
+    "titulo": "ForensicVM — HTTPS numa intranet — CA local e chave de segurança",
+    "youtube": "BvlMp-Glkgc",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "21-cape-instalacao": {
+    "titulo": "ForensicVM — Instalar o CAPE — módulo e máquina de análise",
+    "youtube": "XP1BuVGA6U8",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "33-gestao-operacao": {
+    "titulo": "ForensicVM — Gerir o servidor",
+    "youtube": "JnMQVMWkOnQ",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "34-copias-troubleshooting": {
+    "titulo": "ForensicVM — Cópias de segurança e resolução de problemas",
+    "youtube": "ru_RcRbTZ98",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  },
+  "00-principal": {
+    "titulo": "ForensicVM — Demonstração completa",
+    "youtube": "e_hGeq2bFbM",
+    "privacidade": "unlisted",
+    "legendas": "gravadas"
+  }
+}

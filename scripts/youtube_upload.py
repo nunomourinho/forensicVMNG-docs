@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
 """Carrega os vídeos de demonstração do ForensicVM no YouTube (YouTube Data API v3).
 
-Para cada vídeo: upload resumível do MP4, título, descrição com os capítulos e a ligação
-para a página da documentação, legendas pt-PT (.srt) e inserção na playlist da série.
-O estado fica em docs/_data/videos.json, gravado depois de cada vídeo; uma nova execução
-salta o que já foi feito. Ao esgotar a quota diária, pára e diz para retomar no dia seguinte.
+Para cada vídeo: upload resumível do MP4 legendado (legendas gravadas na imagem), título,
+descrição com os capítulos e a ligação para a página da documentação (só pt) e inserção na
+playlist da série da língua. Se não houver versão legendada, envia a -musica.mp4 e carrega
+o .srt/.vtt como faixa de legendas.
+O estado fica em docs/_data/videos.json (pt na raiz, en em "en"), gravado depois de cada
+vídeo; uma nova execução salta o que já foi feito. Ao esgotar a quota diária, pára e diz
+para retomar no dia seguinte. Os vídeos vão para o canal fixado em "_canal" no primeiro login.
 
 Credenciais (nunca no repositório):
     ~/.config/forensicvm/youtube-client-secret.json   cliente OAuth «Aplicação para computador»
     ~/.config/forensicvm/youtube-token.json           criado no primeiro login (0600)
 
+Autenticação sem browser local (servidor remoto):
+    youtube_upload.py --auth-url                      # imprime o endereço a abrir
+    youtube_upload.py --auth-code 'http://localhost:8765/?state=…&code=…'
+                                                      # colar o endereço da página que falha
+
 Uso:
     youtube_upload.py --simular                       # mostra o que faria, sem API
+    youtube_upload.py --lang en                       # série inglesa (demo-en)
     youtube_upload.py --apenas 32-resumo-sistema      # um vídeo (teste)
     youtube_upload.py                                 # todos os que faltam, pela ordem da série
 """
@@ -27,12 +36,45 @@ ESTADO = RAIZ / 'docs' / '_data' / 'videos.json'
 CONFIG = Path.home() / '.config' / 'forensicvm'
 CLIENTE = CONFIG / 'youtube-client-secret.json'
 TOKEN = CONFIG / 'youtube-token.json'
+PENDENTE = CONFIG / 'youtube-auth-pendente.json'   # state + code_verifier entre --auth-url e --auth-code
+REDIRECT = 'http://localhost:8765/'
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload',
           'https://www.googleapis.com/auth/youtube.force-ssl']
 
-PLAYLIST_TITULO = 'ForensicVM NextGen — demonstrações'
-PLAYLIST_DESCRICAO = ('Série de demonstrações do ForensicVM NextGen, plataforma de virtualização forense: '
-                      'da imagem de disco apreendida a uma máquina virtual controlada pelo navegador.')
+LINGUAS = {
+    'pt': {
+        'videos': Path('/forensicVM/mnt/iso/demo-pj'),
+        'codigo': 'pt-PT', 'nome_legendas': 'Português (Portugal)',
+        'playlist': 'ForensicVM NextGen — demonstrações',
+        'playlist_desc': ('Série de demonstrações do ForensicVM NextGen, plataforma de virtualização forense: '
+                          'da imagem de disco apreendida a uma máquina virtual controlada pelo navegador.'),
+        'principal': 'Demonstração completa',
+        'resumo_principal': ('Demonstração completa do ForensicVM NextGen, do primeiro acesso à análise, '
+                             'com operações reais sobre imagens forenses públicas do CFReDS (NIST).'),
+        'capitulos': 'Capítulos:', 'documentacao': 'Documentação:',
+        'aviso': ('Demonstração feita com imagens forenses públicas do CFReDS (NIST). O ForensicVM NextGen '
+                  'está em desenvolvimento ativo e ainda não é recomendado para uso em produção.'),
+        'tags': ['ForensicVM', 'forense digital', 'virtualização forense', 'perícia informática',
+                 'digital forensics', 'QEMU', 'KVM', 'CFReDS', 'NIST'],
+        'docs': True,
+    },
+    'en': {
+        'videos': Path('/forensicVM/mnt/iso/demo-en'),
+        'codigo': 'en-GB', 'nome_legendas': 'English (United Kingdom)',
+        'playlist': 'ForensicVM NextGen — demos',
+        'playlist_desc': ('Demo series of ForensicVM NextGen, a forensic virtualisation platform: '
+                          'from a seized disk image to a virtual machine controlled from the browser.'),
+        'principal': 'Full demonstration',
+        'resumo_principal': ('Full demonstration of ForensicVM NextGen, from first sign-in to analysis, '
+                             'with real operations on public forensic images from CFReDS (NIST).'),
+        'capitulos': 'Chapters:', 'documentacao': None,
+        'aviso': ('Demonstration made with public forensic images from CFReDS (NIST). ForensicVM NextGen '
+                  'is under active development and is not yet recommended for production use.'),
+        'tags': ['ForensicVM', 'digital forensics', 'forensic virtualisation', 'computer forensics',
+                 'DFIR', 'QEMU', 'KVM', 'CFReDS', 'NIST'],
+        'docs': False,
+    },
+}
 
 # Ordem de visionamento (a mesma da documentação) e página de cada vídeo.
 PAGINAS = {
@@ -72,10 +114,6 @@ PAGINAS = {
     '34-copias-troubleshooting': 'administracao/copias-e-problemas',
     '00-principal': 'index',
 }
-TITULO_PRINCIPAL = 'Demonstração completa'
-
-TAGS = ['ForensicVM', 'forense digital', 'virtualização forense', 'perícia informática',
-        'digital forensics', 'QEMU', 'KVM', 'CFReDS', 'NIST']
 CATEGORIA = '28'  # Ciência e Tecnologia
 
 
@@ -86,25 +124,28 @@ def tempo(seg):
     return f'{h}:{m:02d}:{s:02d}' if h else f'{m}:{s:02d}'
 
 
-def metadados(vid, videos_dir, docs_url):
+def metadados(vid, videos_dir, docs_url, L):
     meta = json.loads((videos_dir / f'{vid}.json').read_text(encoding='utf-8'))
-    titulo = TITULO_PRINCIPAL if vid == '00-principal' else meta['titulo']
-    resumo = meta.get('resumo') or ('Demonstração completa do ForensicVM NextGen, do primeiro acesso à análise, '
-                                    'com operações reais sobre imagens forenses públicas do CFReDS (NIST).')
+    titulo = L['principal'] if vid == '00-principal' else meta['titulo']
+    resumo = meta.get('resumo') or L['resumo_principal']
     # capítulos seguidos com o mesmo título juntam-se no primeiro
     caps = [c for i, c in enumerate(meta.get('capitulos', []))
             if i == 0 or c['titulo'] != meta['capitulos'][i - 1]['titulo']]
     linhas = [resumo, '']
     # o YouTube só reconhece capítulos com pelo menos 3 entradas, a primeira em 0:00
     if len(caps) >= 3 and caps[0]['t'] == 0:
-        linhas += ['Capítulos:'] + [f"{tempo(c['t'])} {c['titulo']}" for c in caps] + ['']
-    linhas += [f"Documentação: {docs_url.rstrip('/')}/{PAGINAS[vid]}.html", '',
-               'Demonstração feita com imagens forenses públicas do CFReDS (NIST). O ForensicVM NextGen '
-               'está em desenvolvimento ativo e ainda não é recomendado para uso em produção.']
+        linhas += [L['capitulos']] + [f"{tempo(c['t'])} {c['titulo']}" for c in caps] + ['']
+    if L['docs']:
+        linhas += [f"{L['documentacao']} {docs_url.rstrip('/')}/{PAGINAS[vid]}.html", '']
+    linhas += [L['aviso']]
+    # versão com as legendas gravadas na imagem; sem ela, a com música + faixa de legendas
+    legendado = videos_dir / f'{vid}-legendado.mp4'
+    gravadas = legendado.exists()
     return {
-        'titulo': f'ForensicVM — {titulo}'[:100],
+        'titulo': (titulo if titulo.startswith('ForensicVM') else f'ForensicVM — {titulo}')[:100],
         'descricao': '\n'.join(linhas)[:5000],
-        'mp4': videos_dir / f'{vid}.mp4',
+        'mp4': legendado if gravadas else videos_dir / f'{vid}-musica.mp4',
+        'gravadas': gravadas,
         # o YouTube aceita SRT e WebVTT; o vídeo completo só tem .vtt
         'srt': next((f for f in (videos_dir / f'{vid}.srt', videos_dir / f'{vid}.vtt') if f.exists()),
                     videos_dir / f'{vid}.srt'),
@@ -121,25 +162,85 @@ def gravar_estado(estado):
     tmp.replace(ESTADO)
 
 
+def gravar_privado(caminho, texto):
+    CONFIG.mkdir(parents=True, exist_ok=True)
+    fd = os.open(caminho, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, 'w') as f:
+        f.write(texto)
+    os.chmod(caminho, 0o600)
+
+
+def novo_flow(state=None, verifier=None):
+    from google_auth_oauthlib.flow import Flow
+    if not CLIENTE.exists():
+        sys.exit(f'Falta o cliente OAuth em {CLIENTE} — ver o README (Fase B).')
+    flow = Flow.from_client_secrets_file(str(CLIENTE), SCOPES, state=state, redirect_uri=REDIRECT)
+    if verifier:
+        flow.code_verifier = verifier
+    return flow
+
+
+def auth_url():
+    """Passo 1 do login sem browser local: imprime o endereço e guarda o state/PKCE."""
+    flow = novo_flow()
+    url, state = flow.authorization_url(access_type='offline', prompt='consent select_account')
+    gravar_privado(PENDENTE, json.dumps({'state': state, 'verifier': flow.code_verifier}))
+    print('Abra este endereço, escolha o canal ForensicVM e autorize:\n')
+    print(url)
+    print('\nO browser acaba numa página http://localhost:8765/… que não abre — copie esse endereço '
+          'completo e passe-o a --auth-code.')
+
+
+def auth_code(resposta):
+    """Passo 2: troca o código pelo token e mostra o canal autorizado."""
+    if not PENDENTE.exists():
+        sys.exit('Corra primeiro --auth-url.')
+    p = json.loads(PENDENTE.read_text())
+    flow = novo_flow(p['state'], p['verifier'])
+    # o redirect é http://localhost; o oauthlib só o aceita com esta variável
+    os.environ.setdefault('OAUTHLIB_INSECURE_TRANSPORT', '1')
+    flow.fetch_token(authorization_response=resposta.strip())
+    gravar_privado(TOKEN, flow.credentials.to_json())
+    PENDENTE.unlink()
+    from googleapiclient.discovery import build
+    yt = build('youtube', 'v3', credentials=flow.credentials)
+    for c in canais(yt):
+        print(f"Canal autorizado: {c['snippet']['title']}  ({c['id']})")
+
+
+def canais(yt):
+    return executar(yt.channels().list(part='snippet', mine=True)).get('items', [])
+
+
 def autenticar():
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
-    from google_auth_oauthlib.flow import InstalledAppFlow
     from googleapiclient.discovery import build
 
     cred = Credentials.from_authorized_user_file(str(TOKEN), SCOPES) if TOKEN.exists() else None
     if cred and cred.expired and cred.refresh_token:
         cred.refresh(Request())
+        gravar_privado(TOKEN, cred.to_json())
     elif not cred or not cred.valid:
-        if not CLIENTE.exists():
-            sys.exit(f'Falta o cliente OAuth em {CLIENTE} — ver o README (Fase B).')
-        flow = InstalledAppFlow.from_client_secrets_file(str(CLIENTE), SCOPES)
-        print('Abra no browser o endereço abaixo (com o túnel ssh -L 8765:localhost:8765 ativo).')
-        cred = flow.run_local_server(port=8765, open_browser=False)
-    CONFIG.mkdir(parents=True, exist_ok=True)
-    TOKEN.write_text(cred.to_json())
-    os.chmod(TOKEN, 0o600)
+        sys.exit('Sem token válido — corra --auth-url e depois --auth-code.')
     return build('youtube', 'v3', credentials=cred)
+
+
+def confirmar_canal(yt, raiz):
+    """Fixa o canal no primeiro uso e recusa carregar para outro."""
+    ch = canais(yt)
+    if len(ch) != 1:
+        sys.exit(f'A conta autorizada tem {len(ch)} canais visíveis — esperado 1.')
+    cid, nome = ch[0]['id'], ch[0]['snippet']['title']
+    fixo = raiz.get('_canal')
+    if not fixo:
+        if 'forensicvm' not in nome.lower():
+            sys.exit(f'O canal autorizado é «{nome}» ({cid}), não o ForensicVM. Volte a autorizar '
+                     'escolhendo o canal ForensicVM.')
+        raiz['_canal'] = {'id': cid, 'titulo': nome}
+    elif fixo['id'] != cid:
+        sys.exit(f'O canal autorizado é «{nome}» ({cid}), não o fixado «{fixo["titulo"]}» ({fixo["id"]}).')
+    print(f'Canal: {nome} ({cid})')
 
 
 class QuotaEsgotada(Exception):
@@ -157,13 +258,13 @@ def executar(pedido):
         raise
 
 
-def upload(yt, m, privacidade):
+def upload(yt, m, privacidade, L):
     from googleapiclient.errors import HttpError
     from googleapiclient.http import MediaFileUpload
 
     corpo = {
-        'snippet': {'title': m['titulo'], 'description': m['descricao'], 'tags': TAGS,
-                    'categoryId': CATEGORIA, 'defaultLanguage': 'pt-PT', 'defaultAudioLanguage': 'pt-PT'},
+        'snippet': {'title': m['titulo'], 'description': m['descricao'], 'tags': L['tags'],
+                    'categoryId': CATEGORIA, 'defaultLanguage': L['codigo'], 'defaultAudioLanguage': L['codigo']},
         'status': {'privacyStatus': privacidade, 'selfDeclaredMadeForKids': False, 'embeddable': True},
     }
     media = MediaFileUpload(str(m['mp4']), mimetype='video/mp4', chunksize=8 * 1024 * 1024, resumable=True)
@@ -175,7 +276,7 @@ def upload(yt, m, privacidade):
             if estado:
                 print(f'  … {int(estado.progress() * 100)}%', end='\r', flush=True)
         except HttpError as e:
-            if e.resp.status == 403 and b'quota' in e.content.lower():
+            if (e.resp.status == 403 and b'quota' in e.content.lower()) or b'uploadLimitExceeded' in e.content:
                 raise QuotaEsgotada() from e
             if e.resp.status not in (500, 502, 503, 504) or tentativas >= 8:
                 raise
@@ -185,72 +286,97 @@ def upload(yt, m, privacidade):
     return resposta['id'], resposta.get('status', {}).get('privacyStatus')
 
 
-def legendas(yt, video_id, srt):
+def legendas(yt, video_id, srt, L):
     from googleapiclient.http import MediaFileUpload
-    corpo = {'snippet': {'videoId': video_id, 'language': 'pt-PT', 'name': 'Português (Portugal)'}}
+    corpo = {'snippet': {'videoId': video_id, 'language': L['codigo'], 'name': L['nome_legendas']}}
     executar(yt.captions().insert(part='snippet', body=corpo,
                                   media_body=MediaFileUpload(str(srt), mimetype='application/octet-stream')))
 
 
-def playlist(yt, estado):
+def playlist(yt, estado, raiz, L, privacidade):
     pid = estado.get('_playlist')
     if not pid:
         r = executar(yt.playlists().insert(part='snippet,status', body={
-            'snippet': {'title': PLAYLIST_TITULO, 'description': PLAYLIST_DESCRICAO, 'defaultLanguage': 'pt-PT'},
-            'status': {'privacyStatus': 'public'}}))
+            'snippet': {'title': L['playlist'], 'description': L['playlist_desc'], 'defaultLanguage': L['codigo']},
+            'status': {'privacyStatus': privacidade}}))
         pid = estado['_playlist'] = r['id']
-        gravar_estado(estado)
+        gravar_estado(raiz)
     return pid
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--videos', type=Path, default=Path('/forensicVM/mnt/iso/demo-pj'))
+    ap.add_argument('--lang', choices=list(LINGUAS), default='pt')
+    ap.add_argument('--videos', type=Path, help='pasta dos vídeos (por omissão, a da língua)')
     ap.add_argument('--docs-url', default='https://forensicvmng-user-manual.readthedocs.io/pt/latest')
-    ap.add_argument('--privacidade', choices=['public', 'unlisted', 'private'], default='public')
+    ap.add_argument('--privacidade', choices=['public', 'unlisted', 'private'], default='unlisted')
     ap.add_argument('--apenas', nargs='+', metavar='ID', help='só estes vídeos')
     ap.add_argument('--simular', action='store_true', help='mostra os metadados sem usar a API')
+    ap.add_argument('--auth-url', action='store_true', help='login, passo 1: imprime o endereço a abrir')
+    ap.add_argument('--auth-code', metavar='URL', help='login, passo 2: endereço localhost:8765 colado')
     args = ap.parse_args()
 
+    if args.auth_url:
+        return auth_url()
+    if args.auth_code:
+        return auth_code(args.auth_code)
+
+    L = LINGUAS[args.lang]
+    videos = args.videos or L['videos']
     ids = args.apenas or list(PAGINAS)
     desconhecidos = [i for i in ids if i not in PAGINAS]
     if desconhecidos:
         sys.exit(f'Ids desconhecidos: {", ".join(desconhecidos)}')
 
-    estado = carregar_estado()
+    # pt fica na raiz (é o que a diretiva {video} lê); as outras línguas numa secção própria
+    raiz = carregar_estado()
+    estado = raiz if args.lang == 'pt' else raiz.setdefault(args.lang, {})
     pendentes = [i for i in ids if not estado.get(i, {}).get('youtube') or not estado[i].get('legendas')]
-    print(f'{len(pendentes)} vídeo(s) por carregar.')
+    print(f'{len(pendentes)} vídeo(s) por carregar ({args.lang}).')
 
     if args.simular:
         for vid in pendentes:
-            m = metadados(vid, args.videos, args.docs_url)
+            m = metadados(vid, videos, args.docs_url, L)
             tam = m['mp4'].stat().st_size / 1e6
-            print(f"\n=== {vid}  ({tam:.0f} MB, legendas: {'sim' if m['srt'].exists() else 'NÃO'})")
+            leg = 'gravadas' if m['gravadas'] else ('faixa ' + m['srt'].suffix if m['srt'].exists() else 'NÃO')
+            print(f"\n=== {vid}  ({m['mp4'].name}, {tam:.0f} MB, legendas: {leg})")
             print(m['titulo'])
             print(m['descricao'])
         return
 
     yt = autenticar()
+    confirmar_canal(yt, raiz)
+    gravar_estado(raiz)
+    aviso_bloqueio = False
     try:
-        pid = playlist(yt, estado)
+        pid = playlist(yt, estado, raiz, L, args.privacidade)
         for vid in pendentes:
-            m = metadados(vid, args.videos, args.docs_url)
+            m = metadados(vid, videos, args.docs_url, L)
             info = estado.setdefault(vid, {'titulo': m['titulo']})
             if not info.get('youtube'):
                 print(f'→ {vid}: upload de {m["mp4"].name}')
-                info['youtube'], info['privacidade'] = upload(yt, m, args.privacidade)
-                gravar_estado(estado)
+                info['youtube'], info['privacidade'] = upload(yt, m, args.privacidade, L)
+                if m['gravadas']:
+                    info['legendas'] = 'gravadas'
+                gravar_estado(raiz)
                 executar(yt.playlistItems().insert(part='snippet', body={'snippet': {
                     'playlistId': pid, 'resourceId': {'kind': 'youtube#video', 'videoId': info['youtube']}}}))
                 print(f'  https://youtu.be/{info["youtube"]}  ({info["privacidade"]})')
-            if m['srt'].exists() and not info.get('legendas'):
-                legendas(yt, info['youtube'], m['srt'])
-                info['legendas'] = True
-                gravar_estado(estado)
-                print('  legendas pt-PT carregadas')
+                if info['privacidade'] != args.privacidade and not aviso_bloqueio:
+                    aviso_bloqueio = True
+                    print(f'  AVISO: pedido {args.privacidade}, o YouTube devolveu {info["privacidade"]} — '
+                          'o projeto da API provavelmente não está auditado (vídeos bloqueados como privados).')
+            if not info.get('legendas'):
+                if m['srt'].exists():
+                    legendas(yt, info['youtube'], m['srt'], L)
+                    info['legendas'] = True
+                    print(f"  legendas {L['codigo']} carregadas")
+                else:
+                    info['legendas'] = 'nenhumas'
+                gravar_estado(raiz)
     except QuotaEsgotada:
-        gravar_estado(estado)
-        sys.exit('Quota diária da API esgotada. O progresso ficou guardado — volte a correr amanhã.')
+        gravar_estado(raiz)
+        sys.exit('Quota diária da API (ou limite de uploads do canal) esgotada. O progresso ficou guardado — volte a correr amanhã.')
     print('Concluído.')
 
 
